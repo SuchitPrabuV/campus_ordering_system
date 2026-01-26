@@ -61,6 +61,11 @@
             <strong>{{ p.name }}</strong><br>
             <span class="price">₹{{ p.price }}</span><br>
             <span class="location">{{ p.location }}</span>
+            <form method="post" action="{% url 'add_to_cart' p.id %}">
+            {% csrf_token %}
+            <button>Add to Cart</button>
+            </form>
+
         </div>
     {% empty %}
         <p class="empty">No items available</p>
@@ -76,6 +81,11 @@
             <strong>{{ p.name }}</strong><br>
             <span class="price">₹{{ p.price }}</span><br>
             <span class="location">{{ p.location }}</span>
+            <form method="post" action="{% url 'add_to_cart' p.id %}">
+            {% csrf_token %}
+            <button>Add to Cart</button>
+            </form>
+
         </div>
     {% empty %}
         <p class="empty">No items available</p>
@@ -91,6 +101,11 @@
             <strong>{{ p.name }}</strong><br>
             <span class="price">₹{{ p.price }}</span><br>
             <span class="location">{{ p.location }}</span>
+            <form method="post" action="{% url 'add_to_cart' p.id %}">
+            {% csrf_token %}
+            <button>Add to Cart</button>
+            </form>
+
         </div>
     {% empty %}
         <p class="empty">No items available</p>

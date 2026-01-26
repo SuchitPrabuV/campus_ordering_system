@@ -1,0 +1,17 @@
+<h1>Your Cart</h1>
+
+{% if items %}
+    {% for item in items %}
+        <p>
+            {{ item.product.name }} × {{ item.qty }} = ₹{{ item.subtotal }}
+        </p>
+    {% endfor %}
+
+    <h3>Total: ₹{{ total }}</h3>
+    <a href="{% url 'place_order' %}">Place Order</a>
+{% else %}
+    <p>Your cart is empty 🛒</p>
+{% endif %}
+
+<br>
+<a href="{% url 'home' %}">← Continue Shopping</a>

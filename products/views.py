@@ -13,7 +13,7 @@ def home(request):
     })
 
 def seller_dashboard(request):
-    outlet = 'CAFE'  # change later for Hut / Mart
+    outlet = 'MART'  # change later for Hut / Mart
     products = Product.objects.filter(outlet=outlet)
 
     return render(request, 'products/seller_dashboard.html', {
