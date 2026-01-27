@@ -1,116 +1,274 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Ordering System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-purple: #6200EA;
+            --light-purple: #F3E5F5;
+            --dark-text: #333333;
+            --gray-text: #666666;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(98, 0, 234, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
+            font-family: 'Poppins', sans-serif;
+            background: #F9FAFC;
+            color: var(--dark-text);
+            padding-bottom: 80px; /* Space for fixed cart button */
+        }
+
+        /* Header Styling */
+        header {
+            background: var(--primary-purple);
+            color: var(--white);
             padding: 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         h1 {
-            text-align: center;
-            margin-bottom: 40px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Section Styling */
+        .outlet {
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            padding: 0 20px;
         }
 
         h2 {
-            color: #2c3e50;
+            color: var(--primary-purple);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-purple);
+            padding-left: 10px;
+            display: flex;
+            align-items: center;
         }
 
-        .outlet {
-            margin-bottom: 40px;
+        /* Grid Layout for Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
 
+        /* Card Styling */
         .card {
-            background: white;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--white);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .price {
-            color: #27ae60;
-            font-weight: bold;
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(98, 0, 234, 0.15);
+        }
+
+        .card-header {
+            margin-bottom: 10px;
+        }
+
+        .card strong {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 5px;
         }
 
         .location {
-            color: #555;
-            font-size: 14px;
+            color: var(--gray-text);
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 15px;
+            background: var(--light-purple);
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
         }
 
-        .empty {
-            color: #999;
-            font-style: italic;
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
         }
+
+        .price {
+            color: var(--primary-purple);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Button Styling */
+        form {
+            margin: 0; /* Reset form margin */
+        }
+
+        button {
+            background: var(--primary-purple);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #4a00b0;
+        }
+
+        /* Empty State */
+        .empty {
+            color: var(--gray-text);
+            font-style: italic;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px dashed #ccc;
+        }
+
+        /* Fixed Bottom Cart Bar */
+        .floating-cart {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-text);
+            color: var(--white);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .floating-cart:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
     </style>
 </head>
 
 <body>
+    {% load cart_tags %}
 
-<h1>Campus Food Ordering</h1>
+    <header>
+        <h1>Campus Food Ordering</h1>
+    </header>
 
-<!-- CAFE -->
-<div class="outlet">
-    <h2>☕ Cafe</h2>
+    <div class="outlet">
+        <h2>☕ Cafe</h2>
+        <div class="card-grid">
+            {% for p in cafes %}
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ p.name }}</strong>
+                        <span class="location">📍 {{ p.location }}</span>
+                    </div>
+                    <div class="card-footer">
+                        <span class="price">₹{{ p.price }}</span>
+                        <p> Selected: {{ cart|get_item:p.id|default:"0" }} </p>
+                        <form method="post" action="{% url 'add_to_cart' p.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Add +</button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty">No items currently available in Cafe.</p>
+            {% endfor %}
+        </div>
+    </div>
 
-    {% for p in cafes %}
-        <div class="card">
-            <strong>{{ p.name }}</strong><br>
-            <span class="price">₹{{ p.price }}</span><br>
-            <span class="location">{{ p.location }}</span>
-            <form method="post" action="{% url 'add_to_cart' p.id %}">
-            {% csrf_token %}
-            <button>Add to Cart</button>
-            </form>
+    <div class="outlet">
+        <h2>🍔 Hut Cafe</h2>
+        <div class="card-grid">
+            {% for p in huts %}
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ p.name }}</strong>
+                        <span class="location">📍 {{ p.location }}</span>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <span class="price">₹{{ p.price }}</span>
+                        <p> Selected:{{ cart|get_item:p.id|default:"0" }} </p>
+                        <form method="post" action="{% url 'add_to_cart' p.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Add</button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty">No items currently available in Hut.</p>
+            {% endfor %}
 
         </div>
-    {% empty %}
-        <p class="empty">No items available</p>
-    {% endfor %}
-</div>
+    </div>
 
-<!-- HUT -->
-<div class="outlet">
-    <h2>🍔 Hut Cafe</h2>
-
-    {% for p in huts %}
-        <div class="card">
-            <strong>{{ p.name }}</strong><br>
-            <span class="price">₹{{ p.price }}</span><br>
-            <span class="location">{{ p.location }}</span>
-            <form method="post" action="{% url 'add_to_cart' p.id %}">
-            {% csrf_token %}
-            <button>Add to Cart</button>
-            </form>
-
+    <div class="outlet">
+        <h2>🛒 REC Mart</h2>
+        <div class="card-grid">
+            {% for p in marts %}
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ p.name }}</strong>
+                        <span class="location">📍 {{ p.location }}</span>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <span class="price">₹{{ p.price }}</span>
+                        <p> Selected: {{ cart|get_item:p.id|default:"0" }} </p>
+                        <form method="post" action="{% url 'add_to_cart' p.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Add</button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty">No items currently available in Mart.</p>
+            {% endfor %}
         </div>
-    {% empty %}
-        <p class="empty">No items available</p>
-    {% endfor %}
-</div>
+    </div>
 
-<!-- REC MART -->
-<div class="outlet">
-    <h2>🛒 REC Mart</h2>
-
-    {% for p in marts %}
-        <div class="card">
-            <strong>{{ p.name }}</strong><br>
-            <span class="price">₹{{ p.price }}</span><br>
-            <span class="location">{{ p.location }}</span>
-            <form method="post" action="{% url 'add_to_cart' p.id %}">
-            {% csrf_token %}
-            <button>Add to Cart</button>
-            </form>
-
-        </div>
-    {% empty %}
-        <p class="empty">No items available</p>
-    {% endfor %}
-</div>
+    <a href="{% url 'view_cart' %}" class="floating-cart">
+        🛒 Go to Cart / Checkout
+    </a>
 
 </body>
 </html>

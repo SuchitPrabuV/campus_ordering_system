@@ -7,7 +7,7 @@ def add_to_cart(request, product_id):
     cart = request.session.get('cart', {})
     cart[str(product_id)] = cart.get(str(product_id), 0) + 1
     request.session['cart'] = cart
-    return redirect('view_cart')
+    return redirect('home')
 
 
 def view_cart(request):
@@ -48,3 +48,19 @@ def place_order(request):
 
     request.session['cart'] = {}
     return render(request, 'orders/success.html', {'order': order})
+
+def remove_from_cart(request, product_id):
+    cart = request.session.get('cart', {})    
+    if str(product_id) in cart:
+        current_qty=cart[str(product_id)]
+        if current_qty > 1:
+            cart[str(product_id)] = current_qty-1
+        else:
+            del cart[str(product_id)]
+        request.session['cart'] = cart
+    return redirect('view_cart')
+
+
+def clear_cart(request):
+    request.session['cart'] = {}
+    return redirect('home')

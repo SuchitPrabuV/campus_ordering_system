@@ -1,17 +1,216 @@
-<h1>Your Cart</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-purple: #6200EA;
+            --light-purple: #F3E5F5;
+            --dark-text: #333333;
+            --gray-text: #666666;
+            --white: #ffffff;
+            --red-accent: #ff4757;
+            --shadow: 0 4px 12px rgba(98, 0, 234, 0.1);
+        }
 
-{% if items %}
-    {% for item in items %}
-        <p>
-            {{ item.product.name }} × {{ item.qty }} = ₹{{ item.subtotal }}
-        </p>
-    {% endfor %}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F9FAFC;
+            color: var(--dark-text);
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-    <h3>Total: ₹{{ total }}</h3>
-    <a href="{% url 'place_order' %}">Place Order</a>
-{% else %}
-    <p>Your cart is empty 🛒</p>
-{% endif %}
+        h1 {
+            color: var(--primary-purple);
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-<br>
-<a href="{% url 'home' %}">← Continue Shopping</a>
+        /* Cart Container */
+        .cart-container {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow: hidden; /* Keeps corners rounded */
+        }
+
+        /* Item Row Styling */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .item-meta {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: var(--primary-purple);
+            font-size: 1.1rem;
+            margin: 0 15px;
+        }
+
+        /* Remove Button */
+        .btn-remove {
+            color: var(--red-accent);
+            background: rgba(255, 71, 87, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-remove:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+
+        /* Summary Section */
+        .cart-summary {
+            margin-top: 30px;
+            background: var(--light-purple);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: right;
+        }
+
+        .total-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            color: var(--primary-purple);
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn-action {
+            display: inline-block;
+            background: var(--primary-purple);
+            color: var(--white);
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(98, 0, 234, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            color: var(--gray-text);
+            text-decoration: none;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            color: var(--primary-purple);
+        }
+        
+        .btn-danger {
+            color: var(--red-accent);
+            font-size: 0.9rem;
+            text-decoration: none;
+            float: left; /* Pushes it to the left side */
+            margin-top: 25px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 50px 0;
+            color: var(--gray-text);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Your Order</h1>
+
+    <div class="cart-container">
+        {% if items %}
+            {% for item in items %}
+                <div class="cart-item">
+                    <div class="item-details">
+                        <span class="item-name">{{ item.product.name }}</span>
+                        <div class="item-meta">
+                            Qty: {{ item.qty }} × ₹{{ item.product.price }}
+                        </div>
+                    </div>
+                    
+                    <div class="item-price">
+                        ₹{{ item.subtotal }}
+                    </div>
+
+                    <a href="{% url 'remove_from_cart' item.product.id %}" class="btn-remove">
+                        Remove
+                    </a>
+                </div>
+            {% endfor %}
+
+            <div class="cart-summary">
+                <div class="total-label">Total to Pay</div>
+                <div class="total-amount">₹{{ total }}</div>
+                
+                <a href="{% url 'place_order' %}" class="btn-action">
+                    Confirm & Place Order →
+                </a>
+            </div>
+
+            <div style="clear: both; padding-top: 10px;">
+                <a href="{% url 'clear_cart' %}" class="btn-danger">
+                    ❌ Clear Cart
+                </a>
+                
+                <a href="{% url 'home' %}" class="btn-secondary" style="float: right;">
+                    ← Add more items
+                </a>
+            </div>
+
+        {% else %}
+            <div class="empty-cart">
+                <h2>🛒</h2>
+                <p>Your cart is empty.</p>
+                <br>
+                <a href="{% url 'home' %}" class="btn-action">Start Ordering</a>
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
