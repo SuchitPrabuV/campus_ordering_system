@@ -1,0 +1,11 @@
+<h2>Order Verified ✅</h2>
+
+<h3>Outlet: {{ outlet }}</h3>
+
+<ul>
+    {% for item in items %}
+        <li>{{ item.product.name }} × {{ item.quantity }}</li>
+    {% endfor %}
+</ul>
+
+<p style="color:green;">QR marked as used</p>

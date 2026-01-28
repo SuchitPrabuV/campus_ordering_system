@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -57,6 +58,13 @@
     </style>
 </head>
 <body>
+<h3>Select Outlet</h3>
+
+<a href="?outlet=MART">REC Mart</a> |
+<a href="?outlet=HUT">Hut Cafe</a> |
+<a href="?outlet=CAFE">REC Cafe</a>
+
+<hr>
 
 <h1>Seller Dashboard — {{ outlet }}</h1>
 
@@ -87,6 +95,20 @@
     </tr>
     {% endfor %}
 </table>
+
+<h2>Seller Dashboard</h2>
+
+<a href="{% url 'scan_qr' %}">Scan QR</a><br>
+<a href="/admin/">Manage Products</a><br>
+<a href="{% url 'logout' %}">Logout</a>
+
+<hr>
+
+<h3>Order Claim</h3>
+
+<a href="{% url 'scan_qr' %}">
+    <button>Scan QR Code</button>
+</a>
 
 </body>
 </html>

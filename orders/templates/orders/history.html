@@ -1,0 +1,7 @@
+<h2>Your Orders</h2>
+
+{% for order in orders %}
+<p>
+Order #{{ order.id }} — {{ order.status }} — {{ order.created_at }}
+</p>
+{% endfor %}

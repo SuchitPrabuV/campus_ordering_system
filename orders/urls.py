@@ -1,11 +1,20 @@
 from django.urls import path
-from .views import add_to_cart, view_cart, place_order, remove_from_cart, clear_cart
+from . import views
 
 urlpatterns = [
-    path('add/<int:product_id>/', add_to_cart, name='add_to_cart'),
-    path('cart/', view_cart, name='view_cart'),
-    path('place/', place_order, name='place_order'),
-    path('remove/<int:product_id>/', remove_from_cart, name='remove_from_cart'),
-    path('clear/', clear_cart, name='clear_cart'),
+    # Cart & ordering (student side)
+    path("add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
+    path("cart/", views.view_cart, name="view_cart"),
+    path("place/", views.place_order, name="place_order"),
+    path("remove/<int:product_id>/", views.remove_from_cart, name="remove_from_cart"),
+    path("clear/", views.clear_cart, name="clear_cart"),
+
+    # Seller side
+    path("seller/dashboard/", views.seller_dashboard, name="seller_dashboard"),
+    path("seller/toggle/<int:product_id>/", views.toggle_product, name="toggle_product"),
+
+    # QR flow
+    path("scan/", views.scan_qr, name="scan_qr"),
+    path("my-orders/", views.my_orders, name="my_orders"),
 
 ]

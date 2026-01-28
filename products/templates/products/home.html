@@ -186,7 +186,6 @@
 
 <body>
     {% load cart_tags %}
-
     <header>
         <h1>Campus Food Ordering</h1>
     </header>
@@ -265,6 +264,8 @@
             {% endfor %}
         </div>
     </div>
+
+    <a href="{% url 'my_orders' %}">📄 My Orders / QR Codes</a>
 
     <a href="{% url 'view_cart' %}" class="floating-cart">
         🛒 Go to Cart / Checkout

@@ -1,3 +1,10 @@
 <h1>Order Placed Successfully 🎉</h1>
 <p>Order ID: {{ order.id }}</p>
 <p>Status: {{ order.status }}</p>
+
+<h2>Show this QR at the outlet</h2>
+
+{% for qr in qr_data %}
+    <h3>{{ qr.outlet }}</h3>
+    <img src="data:image/png;base64,{{ qr.image }}" />
+{% endfor %}

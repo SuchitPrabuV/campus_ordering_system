@@ -1,0 +1,21 @@
+<h2>My Orders</h2>
+
+{% for entry in qr_map %}
+    <h3>Order #{{ entry.order.id }} — {{ entry.order.status }}</h3>
+
+    {% for qr in entry.qrs %}
+        <p>
+            Outlet: {{ qr.outlet }}
+            {% if qr.is_used %}
+                ❌ Used
+            {% else %}
+                ✅ Active
+            {% endif %}
+        </p>
+
+        <img src="data:image/png;base64,{{ qr.image }}" width="200">
+        <hr>
+    {% endfor %}
+{% empty %}
+    <p>No orders yet.</p>
+{% endfor %}
