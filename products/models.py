@@ -13,5 +13,7 @@ class Product(models.Model):
     location = models.CharField(max_length=100)  # eg: "1st Floor"
     is_available = models.BooleanField(default=True)
 
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    
     def __str__(self):
         return f"{self.name} - {self.outlet}"

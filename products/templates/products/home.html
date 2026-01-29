@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Ordering System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary-purple: #6200EA;
-            --light-purple: #F3E5F5;
-            --dark-text: #333333;
-            --gray-text: #666666;
+            --primary: #6311d6;
+            --primary-dark: #4a00b0;
+            --primary-light: #EEE5FF;
+            --text-main: #2D2D2D;
+            --text-light: #757575;
             --white: #ffffff;
-            --shadow: 0 4px 12px rgba(98, 0, 234, 0.1);
+            --bg-page: #F4F6F9;
+            --success: #00C853;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            --radius-lg: 16px;
+            --radius-sm: 8px;
         }
 
         * {
@@ -24,156 +29,278 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: #F9FAFC;
-            color: var(--dark-text);
-            padding-bottom: 80px; /* Space for fixed cart button */
+            background: var(--bg-page);
+            color: var(--text-main);
+            padding-bottom: 100px; /* Space for fixed cart */
         }
 
-        /* Header Styling */
+        /* --- Header & Top Nav --- */
         header {
-            background: var(--primary-purple);
+            background: var(--primary);
             color: var(--white);
-            padding: 20px;
+            padding: 25px 20px 40px 20px; /* Extra bottom padding for overlap */
             text-align: center;
-            border-radius: 0 0 20px 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 0 0 30px 30px;
+            margin-bottom: -20px; /* Negative margin to pull controls up */
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 10px rgba(98, 0, 234, 0.2);
         }
 
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 600;
-            margin: 0;
+            letter-spacing: 0.5px;
         }
 
-        /* Section Styling */
+        /* --- Control Bar (Search + My Orders) --- */
+        .control-bar {
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            background: var(--white);
+            padding: 15px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 10;
+            width: 90%;
+        }
+
+        .search-form {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            min-width: 250px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 10px 15px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .clear-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.85rem;
+            align-self: center;
+            margin-left: 5px;
+        }
+
+        /* --- Sections --- */
         .outlet {
             max-width: 1200px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto 40px auto;
             padding: 0 20px;
         }
 
         h2 {
-            color: var(--primary-purple);
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            border-left: 4px solid var(--primary-purple);
-            padding-left: 10px;
+            color: var(--text-main);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
+            gap: 10px;
         }
 
-        /* Grid Layout for Cards */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        /* Card Styling */
-        .card {
-            background: var(--white);
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid #eee;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(98, 0, 234, 0.15);
-        }
-
-        .card-header {
-            margin-bottom: 10px;
-        }
-
-        .card strong {
-            font-size: 1.1rem;
+        h2::before {
+            content: '';
             display: block;
-            margin-bottom: 5px;
-        }
-
-        .location {
-            color: var(--gray-text);
-            font-size: 0.85rem;
-            display: block;
-            margin-bottom: 15px;
-            background: var(--light-purple);
-            display: inline-block;
-            padding: 2px 8px;
+            width: 5px;
+            height: 24px;
+            background: var(--primary);
             border-radius: 4px;
         }
 
-        .card-footer {
+        /* --- Card Grid --- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            border: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* IMAGE HOLDER - Insert your dynamic image logic here */
+        .card-img-top {
+            width: 100%;
+            height: 160px;
+            background-color: #eee;
+        }
+        
+        .card-img-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .card-location {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .card-footer-row {
+            margin-top: auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f5f5f5;
         }
 
-        .price {
-            color: var(--primary-purple);
-            font-weight: 700;
+        .price-tag {
             font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
-        /* Button Styling */
-        form {
-            margin: 0; /* Reset form margin */
+        .qty-badge {
+            font-size: 0.75rem;
+            background: #e0e0e0;
+            color: #555;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 8px;
         }
 
-        button {
-            background: var(--primary-purple);
-            color: var(--white);
+        .qty-badge.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .add-form {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s;
+            transition: 0.2s;
         }
 
-        button:hover {
-            background: #4a00b0;
+        .btn-add:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(98, 0, 234, 0.3);
         }
 
-        /* Empty State */
-        .empty {
-            color: var(--gray-text);
-            font-style: italic;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
+        /* --- Empty State --- */
+        .empty-state {
+            grid-column: 1 / -1;
             text-align: center;
-            border: 1px dashed #ccc;
+            padding: 40px;
+            color: var(--text-light);
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 2px dashed #eee;
         }
 
-        /* Fixed Bottom Cart Bar */
+        /* --- Floating Cart --- */
         .floating-cart {
             position: fixed;
-            bottom: 20px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--dark-text);
+            background: var(--text-main);
             color: var(--white);
-            padding: 15px 30px;
+            padding: 14px 30px;
             border-radius: 50px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
             text-decoration: none;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             z-index: 1000;
-            width: 90%;
-            max-width: 400px;
-            justify-content: center;
+            width: max-content;
             transition: transform 0.2s;
         }
 
@@ -181,94 +308,178 @@
             transform: translateX(-50%) scale(1.05);
         }
 
+        /* Responsive */
+        @media (max-width: 600px) {
+            .control-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-outline {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 
 <body>
     {% load cart_tags %}
+    
     <header>
         <h1>Campus Food Ordering</h1>
     </header>
 
+    <div class="control-bar">
+        <form method="get" class="search-form">
+            <input
+                type="text"
+                name="q"
+                class="search-input"
+                placeholder="Search cravings..."
+                value="{{ query }}"
+            >
+            <button type="submit" class="btn-primary">Search</button>
+
+            {% if query %}
+                <a href="{% url 'home' %}" class="clear-link">Clear</a>
+            {% endif %}
+        </form>
+
+        <a href="{% url 'my_orders' %}" class="btn-outline">
+            📄 My Orders
+        </a>
+    </div>
+
     <div class="outlet">
-        <h2>☕ Cafe</h2>
+        <h2>REC Cafe</h2>
         <div class="card-grid">
             {% for p in cafes %}
                 <div class="card">
-                    <div class="card-header">
-                        <strong>{{ p.name }}</strong>
-                        <span class="location">📍 {{ p.location }}</span>
-                    </div>
-                    <div class="card-footer">
-                        <span class="price">₹{{ p.price }}</span>
-                        <p> Selected: {{ cart|get_item:p.id|default:"0" }} </p>
-                        <form method="post" action="{% url 'add_to_cart' p.id %}">
-                            {% csrf_token %}
-                            <button type="submit">Add +</button>
-                        </form>
+                    <div class="card-img-top">
+                        {% if p.image %}
+                        <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                    {% else %}
+                        <img src="https://placehold.co/600x400/EEE5FF/6200EA?text={{ p.name|slice:':2' }}" alt="{{ p.name }}">
+                    {% endif %}
+                </div>
+
+                    <div class="card-body">
+                        <div>
+                            <div class="card-title">{{ p.name }}</div>
+                            <span class="card-location">📍 {{ p.location }}</span>
+                        </div>
+                        
+                        <div class="card-footer-row">
+                            <span class="price-tag">₹{{ p.price }}</span>
+                            
+                            <div class="add-form">
+                                {% with qty=cart|get_item:p.id|default:"0" %}
+                                    {% if qty != "0" %}
+                                        <span class="qty-badge active">{{ qty }} in cart</span>
+                                    {% endif %}
+                                {% endwith %}
+                                
+                                <form method="post" action="{% url 'add_to_cart' p.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-add">ADD +</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% empty %}
-                <p class="empty">No items currently available in Cafe.</p>
+                <div class="empty-state">No items currently available in Cafe.</div>
             {% endfor %}
         </div>
     </div>
 
     <div class="outlet">
-        <h2>🍔 Hut Cafe</h2>
+        <h2>Hut Cafe</h2>
         <div class="card-grid">
             {% for p in huts %}
                 <div class="card">
-                    <div class="card-header">
-                        <strong>{{ p.name }}</strong>
-                        <span class="location">📍 {{ p.location }}</span>
-                    </div>
-                    
-                    <div class="card-footer">
-                        <span class="price">₹{{ p.price }}</span>
-                        <p> Selected:{{ cart|get_item:p.id|default:"0" }} </p>
-                        <form method="post" action="{% url 'add_to_cart' p.id %}">
-                            {% csrf_token %}
-                            <button type="submit">Add</button>
-                        </form>
+                     <div class="card-img-top">
+                        {% if p.image %}
+                            <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                        {% else %}
+                            <img src="https://placehold.co/600x400/EEE5FF/6200EA?text={{ p.name|slice:':2' }}" alt="{{ p.name }}">
+                        {% endif %}
+                </div>
+
+                    <div class="card-body">
+                        <div>
+                            <div class="card-title">{{ p.name }}</div>
+                            <span class="card-location">📍 {{ p.location }}</span>
+                        </div>
+                        
+                        <div class="card-footer-row">
+                            <span class="price-tag">₹{{ p.price }}</span>
+                            
+                            <div class="add-form">
+                                {% with qty=cart|get_item:p.id|default:"0" %}
+                                    {% if qty != "0" %}
+                                        <span class="qty-badge active">{{ qty }} in cart</span>
+                                    {% endif %}
+                                {% endwith %}
+
+                                <form method="post" action="{% url 'add_to_cart' p.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-add">ADD +</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% empty %}
-                <p class="empty">No items currently available in Hut.</p>
+                <div class="empty-state">No items currently available in Hut.</div>
             {% endfor %}
-
         </div>
     </div>
 
     <div class="outlet">
-        <h2>🛒 REC Mart</h2>
+        <h2>REC Mart</h2>
         <div class="card-grid">
             {% for p in marts %}
                 <div class="card">
-                    <div class="card-header">
-                        <strong>{{ p.name }}</strong>
-                        <span class="location">📍 {{ p.location }}</span>
+                    <div class="card-img-top">
+                        {% if p.image %}
+                            <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                        {% else %}
+                            <img src="https://placehold.co/600x400/EEE5FF/6200EA?text={{ p.name|slice:':2' }}" alt="{{ p.name }}">
+                        {% endif %}
                     </div>
-                    
-                    <div class="card-footer">
-                        <span class="price">₹{{ p.price }}</span>
-                        <p> Selected: {{ cart|get_item:p.id|default:"0" }} </p>
-                        <form method="post" action="{% url 'add_to_cart' p.id %}">
-                            {% csrf_token %}
-                            <button type="submit">Add</button>
-                        </form>
+
+                    <div class="card-body">
+                        <div>
+                            <div class="card-title">{{ p.name }}</div>
+                            <span class="card-location">📍 {{ p.location }}</span>
+                        </div>
+                        
+                        <div class="card-footer-row">
+                            <span class="price-tag">₹{{ p.price }}</span>
+                            
+                            <div class="add-form">
+                                {% with qty=cart|get_item:p.id|default:"0" %}
+                                    {% if qty != "0" %}
+                                        <span class="qty-badge active">{{ qty }} in cart</span>
+                                    {% endif %}
+                                {% endwith %}
+
+                                <form method="post" action="{% url 'add_to_cart' p.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-add">ADD +</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% empty %}
-                <p class="empty">No items currently available in Mart.</p>
+                <div class="empty-state">No items currently available in Mart.</div>
             {% endfor %}
         </div>
     </div>
 
-    <a href="{% url 'my_orders' %}">📄 My Orders / QR Codes</a>
-
     <a href="{% url 'view_cart' %}" class="floating-cart">
-        🛒 Go to Cart / Checkout
+        🛒 Checkout / Cart
     </a>
 
 </body>

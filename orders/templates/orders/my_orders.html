@@ -1,76 +1,371 @@
-<h2>My Orders</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Campus Ordering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
 
-{% load tz %}
+    <style>
+        :root {
+            --primary: #6200EA;
+            --primary-dark: #4a00b0;
+            --primary-light: #F3E5F5;
+            --text-main: #2D2D2D;
+            --text-light: #757575;
+            --white: #ffffff;
+            --bg-page: #F4F6F9;
+            --success: #00C853;
+            --danger: #FF1744;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+        }
 
-{% for entry in orders %}
-    <h3>
-        Order #{{ entry.order.id }} —
-        {{ entry.order.created_at|localtime|date:"d M Y, h:i A" }}
-    </h3>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    {% for qr in entry.qrs %}
-        <p>
-            <strong>Outlet:</strong> {{ qr.outlet }} <br>
-            <ul>
-                {% for item in qr.items %}
-                    <li>
-                        {{ item.name }} × {{ item.qty }}
-                    </li>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        /* --- Header --- */
+        .page-header {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            text-align: center;
+        }
+        
+        .page-header h2 {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        /* --- Main Container --- */
+        .orders-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* --- Order Group --- */
+        .order-group { margin-bottom: 40px; }
+
+        .order-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #eaddff;
+            color: var(--primary-dark);
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(98, 0, 234, 0.1);
+        }
+
+        /* --- Ticket Card --- */
+        .ticket-card {
+            background: var(--white);
+            border-radius: 0 0 16px 16px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            border: 1px solid #eee;
+            border-top: none;
+        }
+
+        .ticket-info {
+            flex: 1;
+            padding: 25px;
+            border-right: 2px dashed #e0e0e0;
+            position: relative;
+        }
+
+        /* Perforation circles */
+        .ticket-info::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--bg-page);
+            border-radius: 50%;
+            box-shadow: inset 2px 0 5px rgba(0,0,0,0.05);
+        }
+
+        .outlet-name {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .outlet-name::before { content: '🏪'; }
+
+        .item-list { list-style: none; margin-bottom: 20px; }
+        .item-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #f5f5f5;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .item-list li:last-child { border-bottom: none; }
+
+        .status-area { margin-top: 15px; }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .badge-used { background: #ffebee; color: var(--danger); }
+        .badge-active { background: #e8f5e9; color: var(--success); }
+
+        .expiry-timer {
+            display: block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            background: #f5f5f5;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* --- QR Code Area (Interactive) --- */
+        .ticket-qr {
+            width: 220px;
+            display: flex;
+            flex-direction: column; /* Stack image and text */
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #fafafa;
+            flex-shrink: 0;
+            cursor: pointer; /* Show pointer hand */
+            transition: background 0.2s;
+        }
+
+        .ticket-qr:hover {
+            background: #f0f0f0;
+        }
+
+        .ticket-qr img {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            border: 4px solid var(--white);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .tap-hint {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 10px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* --- QR Zoom Modal (Overlay) --- */
+        .qr-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9); /* Black backdrop */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .qr-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .qr-modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255,255,255,0.1);
+            animation: zoomIn 0.3s ease;
+        }
+
+        .qr-modal-content img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .qr-modal-text {
+            color: var(--text-main);
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .close-hint {
+            color: #aaa;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 600px) {
+            .ticket-card { flex-direction: column-reverse; }
+            .ticket-info { border-right: none; border-top: 2px dashed #e0e0e0; }
+            .ticket-info::after { display: none; }
+            .ticket-qr { width: 100%; padding-bottom: 20px; }
+        }
+    </style>
+</head>
+
+<body>
+    {% load tz %}
+
+    <div class="page-header">
+        <h2>My Orders</h2>
+        <a href="{% url 'home' %}" style="color: #6200EA; text-decoration: none; font-size: 0.9rem;">← Back to Menu</a>
+    </div>
+
+    <div class="orders-container">
+        
+        {% for entry in orders %}
+            <div class="order-group">
+                <div class="order-meta">
+                    <span>ORDER #{{ entry.order.id }}</span>
+                    <span>{{ entry.order.created_at|localtime|date:"d M, h:i A" }}</span>
+                </div>
+
+                {% for qr in entry.qrs %}
+                    <div class="ticket-card">
+                        
+                        <div class="ticket-info">
+                            <h3 class="outlet-name">{{ qr.outlet }}</h3>
+                            <ul class="item-list">
+                                {% for item in qr.items %}
+                                    <li><span>{{ item.name }}</span><strong>x{{ item.qty }}</strong></li>
+                                {% endfor %}
+                            </ul>
+
+                            <div class="status-area">
+                                {% if qr.is_used %}
+                                    <div class="badge badge-used">❌ Used</div>
+                                {% else %}
+                                    <div class="badge badge-active">✅ Active</div>
+                                    <span class="expiry-timer" data-expiry="{{ qr.expires_at }}">⏳ Calculating…</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="ticket-qr" onclick="openModal('{{ qr.image }}', '{{ qr.outlet }}')">
+                            <img src="data:image/png;base64,{{ qr.image }}" alt="QR Code">
+                            <div class="tap-hint">🔍 Tap to enlarge</div>
+                        </div>
+
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
+        {% empty %}
+            <div class="empty-state" style="text-align: center; padding: 40px; background: white; border-radius: 16px;">
+                <p>No orders found yet.</p>
+                <a href="{% url 'home' %}" style="color:#6200EA;">Order something tasty now!</a>
+            </div>
+        {% endfor %}
+    </div>
 
-            {% if qr.is_used %}
-                ❌ Used
-            {% else %}
-                ✅ Active
-                <br>
-                <span 
-                    class="expiry-timer"
-                    data-expiry="{{ qr.expires_at }}">
-                    ⏳ Calculating…
-                </span>
-            {% endif %}
-        </p>
+    <div id="qrModal" class="qr-modal" onclick="closeModal()">
+        <div class="qr-modal-content" onclick="event.stopPropagation()"> <img id="modalImg" src="" alt="Enlarged QR">
+            <div id="modalText" class="qr-modal-text">Scan for Outlet</div>
+            <div class="close-hint" onclick="closeModal()">Tap background to close</div>
+        </div>
+    </div>
 
-        <img src="data:image/png;base64,{{ qr.image }}" width="200">
-        <hr>
-    {% endfor %}
+    <script>
+        // --- Timer Logic (Unchanged) ---
+        function startAllCountdowns() {
+            const timers = document.querySelectorAll(".expiry-timer");
+            timers.forEach(timerEl => {
+                const expiryTime = timerEl.dataset.expiry;
+                const expiryDate = new Date(expiryTime);
+                const interval = setInterval(() => {
+                    const now = new Date();
+                    const diff = expiryDate - now;
+                    if (diff <= 0) {
+                        timerEl.innerText = "❌ QR expired";
+                        timerEl.style.color = "#FF1744";
+                        clearInterval(interval);
+                        return;
+                    }
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    const h = hours < 10 ? '0' + hours : hours;
+                    const m = minutes < 10 ? '0' + minutes : minutes;
+                    const s = seconds < 10 ? '0' + seconds : seconds;
+                    timerEl.innerText = `⏳ Expires in ${h}:${m}:${s}`;
+                }, 1000);
+            });
+        }
 
-{% empty %}
-    <p>No orders found.</p>
-{% endfor %}
+        // --- New Modal Logic ---
+        function openModal(base64Image, outletName) {
+            const modal = document.getElementById('qrModal');
+            const img = document.getElementById('modalImg');
+            const text = document.getElementById('modalText');
 
-<script>
-function startAllCountdowns() {
-    const timers = document.querySelectorAll(".expiry-timer");
+            // Set the image and text dynamically
+            img.src = "data:image/png;base64," + base64Image;
+            text.innerText = "Scan for " + outletName;
 
-    timers.forEach(timerEl => {
-        const expiryTime = timerEl.dataset.expiry;
-        const expiryDate = new Date(expiryTime);
+            // Show the modal
+            modal.classList.add('show');
+        }
 
-        const interval = setInterval(() => {
-            const now = new Date();
-            const diff = expiryDate - now;
+        function closeModal() {
+            const modal = document.getElementById('qrModal');
+            modal.classList.remove('show');
+        }
 
-            if (diff <= 0) {
-                timerEl.innerText = "❌ QR expired";
-                clearInterval(interval);
-                return;
-            }
+        startAllCountdowns();
+    </script>
 
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor(
-                (diff % (1000 * 60 * 60)) / (1000 * 60)
-            );
-            const seconds = Math.floor(
-                (diff % (1000 * 60)) / 1000
-            );
-
-            timerEl.innerText =
-                `⏳ Expires in ${hours}h ${minutes}m ${seconds}s`;
-        }, 1000);
-    });
-}
-
-startAllCountdowns();
-</script>
+</body>
+</html>

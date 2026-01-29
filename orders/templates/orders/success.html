@@ -1,12 +1,209 @@
-<h1>Order Placed Successfully 🎉</h1>
-<p>Order ID: {{ order.id }}</p>
-<p>Status: {{ order.status }}</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success | Campus Ordering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<h2>Show this QR at the outlet</h2>
+    <style>
+        :root {
+            --primary: #6200EA;
+            --primary-dark: #4a00b0;
+            --primary-light: #F3E5F5;
+            --text-main: #2D2D2D;
+            --text-light: #757575;
+            --white: #ffffff;
+            --bg-page: #F4F6F9;
+            --success: #00C853;
+            --card-shadow: 0 10px 30px rgba(98, 0, 234, 0.1);
+            --radius: 16px;
+        }
 
-{% for qr in qr_data %}
-    <h3>{{ qr.outlet }}</h3>
-    <img src="data:image/png;base64,{{ qr.image }}" />
-{% endfor %}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<a href="{% url 'home' %}">Go to Home Page</a><br>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* --- Success Icon Animation --- */
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 200, 83, 0.3);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- Main Card --- */
+        .success-card {
+            background: var(--white);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            border: 1px solid #f0f0f0;
+        }
+
+        h1 {
+            color: var(--text-main);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        /* --- Order Details Box --- */
+        .order-details {
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .order-details span {
+            display: block;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        /* --- QR Section --- */
+        .qr-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .qr-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px dashed #ddd;
+        }
+
+        .qr-item h3 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .qr-item img {
+            max-width: 180px;
+            width: 100%;
+            height: auto;
+            border: 4px solid var(--white);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        /* --- Home Button --- */
+        .btn-home {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            padding: 14px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+        }
+
+        .btn-home:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="success-icon">✓</div>
+
+    <div class="success-card">
+        <h1>Order Placed!</h1>
+        <p class="subtitle">Thank you for your order.</p>
+
+        <div class="order-details">
+            <div>
+                <span class="label">Order ID</span>
+                #{{ order.id }}
+            </div>
+            <div>
+                <span class="label">Status</span>
+                {{ order.status|title }} </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <h2>Show this QR at the outlet</h2>
+
+        <div class="qr-section">
+            {% for qr in qr_data %}
+                <div class="qr-item">
+                    <h3>📍 {{ qr.outlet }}</h3>
+                    <img src="data:image/png;base64,{{ qr.image }}" alt="QR Code for {{ qr.outlet }}" />
+                    <p style="font-size: 0.8rem; color: #888; margin-top: 10px;">Scan to collect items</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{% url 'my_orders' %}" class="btn-home">
+            Go to My Orders
+        </a>
+    </div>
+
+</body>
+</html>

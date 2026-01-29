@@ -1,11 +1,231 @@
-<h1>Campus Ordering System</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Role | Campus Ordering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<h2>Who are you?</h2>
+    <style>
+        :root {
+            --primary: #6200EA;
+            --primary-dark: #4a00b0;
+            --primary-light: #F3E5F5; /* Very light purple */
+            --primary-hover-bg: #EEE5FF;
+            --text-main: #2D2D2D;
+            --text-muted: #666666;
+            --white: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --shadow-soft: 0 20px 40px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 25px 50px rgba(98, 0, 234, 0.15);
+            --radius-xl: 24px;
+            --radius-md: 16px;
+        }
 
-<a href="{% url 'login' %}">
-    <button>Student</button>
-</a>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<a href="{% url 'login' %}">
-    <button>Seller</button>
-</a>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* --- Main Card Container --- */
+        .main-card {
+            background: var(--white);
+            width: 100%;
+            max-width: 850px;
+            padding: 60px 40px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* --- Typography --- */
+        h1 {
+            color: var(--text-main);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+            display: block;
+        }
+
+        h2 {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+
+        /* --- Grid Layout --- */
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* --- Interaction Reset --- */
+        a {
+            text-decoration: none;
+            display: block;
+        }
+
+        /* --- Role Selection Button/Card --- */
+        .role-btn {
+            width: 100%;
+            height: 240px;
+            background: var(--white);
+            border: 2px solid #f0f0f0;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Icon Container */
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .icon-box svg {
+            width: 40px;
+            height: 40px;
+            fill: var(--primary);
+            transition: fill 0.3s ease;
+        }
+
+        /* Text Styling */
+        .role-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: color 0.3s ease;
+        }
+
+        .role-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-weight: 400;
+        }
+
+        /* --- Hover Effects --- */
+        .role-btn:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            background: var(--primary-hover-bg);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .role-btn:hover .icon-box {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .role-btn:hover .icon-box svg {
+            fill: var(--white);
+        }
+
+        .role-btn:hover .role-title {
+            color: var(--primary);
+        }
+
+        /* --- Animation --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Responsive Mobile --- */
+        @media (max-width: 600px) {
+            .main-card {
+                padding: 40px 20px;
+            }
+            h1 { font-size: 1.8rem; }
+            .role-grid { grid-template-columns: 1fr; }
+            .role-btn { height: 180px; flex-direction: row; gap: 20px; padding: 0 30px; justify-content: flex-start; }
+            .icon-box { margin-bottom: 0; width: 60px; height: 60px; flex-shrink: 0; }
+            .icon-box svg { width: 30px; height: 30px; }
+            .text-container { text-align: left; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-card">
+        <span class="subtitle">Rajalakshmi Engineering College</span>
+        <h1>Campus Ordering</h1>
+        <h2>Please select your role to continue</h2>
+
+        <div class="role-grid">
+            
+            <a href="{% url 'login' %}">
+                <button class="role-btn">
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" />
+                        </svg>
+                    </div>
+                    <div class="text-container">
+                        <span class="role-title">Student</span>
+                        <div class="role-desc">Order food & browse menu</div>
+                    </div>
+                </button>
+            </a>
+
+            <a href="{% url 'login' %}">
+                <button class="role-btn">
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M18.36 9L18.96 12H5.04L5.64 9H18.36M20 4H4V6H20V4M20 7H4L3 12V14H4V20H14V14H18V20H20V14H21V12L20 7M6 18V14H12V18H6Z" />
+                        </svg>
+                    </div>
+                    <div class="text-container">
+                        <span class="role-title">Seller</span>
+                        <div class="role-desc">Manage orders & inventory</div>
+                    </div>
+                </button>
+            </a>
+
+        </div>
+    </div>
+
+</body>
+</html>
