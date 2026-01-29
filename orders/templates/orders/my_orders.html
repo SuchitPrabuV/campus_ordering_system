@@ -1,21 +1,76 @@
 <h2>My Orders</h2>
 
-{% for entry in qr_map %}
-    <h3>Order #{{ entry.order.id }} — {{ entry.order.status }}</h3>
+{% load tz %}
+
+{% for entry in orders %}
+    <h3>
+        Order #{{ entry.order.id }} —
+        {{ entry.order.created_at|localtime|date:"d M Y, h:i A" }}
+    </h3>
 
     {% for qr in entry.qrs %}
         <p>
-            Outlet: {{ qr.outlet }}
+            <strong>Outlet:</strong> {{ qr.outlet }} <br>
+            <ul>
+                {% for item in qr.items %}
+                    <li>
+                        {{ item.name }} × {{ item.qty }}
+                    </li>
+                {% endfor %}
+            </ul>
+
             {% if qr.is_used %}
                 ❌ Used
             {% else %}
                 ✅ Active
+                <br>
+                <span 
+                    class="expiry-timer"
+                    data-expiry="{{ qr.expires_at }}">
+                    ⏳ Calculating…
+                </span>
             {% endif %}
         </p>
 
         <img src="data:image/png;base64,{{ qr.image }}" width="200">
         <hr>
     {% endfor %}
+
 {% empty %}
-    <p>No orders yet.</p>
+    <p>No orders found.</p>
 {% endfor %}
+
+<script>
+function startAllCountdowns() {
+    const timers = document.querySelectorAll(".expiry-timer");
+
+    timers.forEach(timerEl => {
+        const expiryTime = timerEl.dataset.expiry;
+        const expiryDate = new Date(expiryTime);
+
+        const interval = setInterval(() => {
+            const now = new Date();
+            const diff = expiryDate - now;
+
+            if (diff <= 0) {
+                timerEl.innerText = "❌ QR expired";
+                clearInterval(interval);
+                return;
+            }
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor(
+                (diff % (1000 * 60 * 60)) / (1000 * 60)
+            );
+            const seconds = Math.floor(
+                (diff % (1000 * 60)) / 1000
+            );
+
+            timerEl.innerText =
+                `⏳ Expires in ${hours}h ${minutes}m ${seconds}s`;
+        }, 1000);
+    });
+}
+
+startAllCountdowns();
+</script>

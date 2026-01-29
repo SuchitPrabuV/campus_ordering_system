@@ -1,7 +1,21 @@
-<h2>Your Orders</h2>
+{% load tz %}
 
-{% for order in orders %}
-<p>
-Order #{{ order.id }} — {{ order.status }} — {{ order.created_at }}
-</p>
+<h2>Order History</h2>
+
+{% for entry in orders %}
+    <div style="border:1px solid #ccc; padding:15px; margin-bottom:20px;">
+        <h3>
+            Order #{{ entry.order.id }} —
+            {{ entry.order.created_at|localtime|date:"d M Y, h:i A" }}
+        </h3>
+
+        {% for qr in entry.qrs %}
+            <p>
+                <strong>Outlet:</strong> {{ qr.outlet }} <br>
+                <strong>Status:</strong> {{ qr.status }}
+            </p>
+        {% endfor %}
+    </div>
+{% empty %}
+    <p>No orders found.</p>
 {% endfor %}

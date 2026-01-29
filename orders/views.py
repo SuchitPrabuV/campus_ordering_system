@@ -10,6 +10,48 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 
+
+from django.utils import timezone
+from django.http import JsonResponse
+
+def scan_qr(request):
+    if request.method == "POST":
+        token = request.POST.get("token")
+
+        try:
+            qr = QRCode.objects.get(token=token)
+        except QRCode.DoesNotExist:
+            return render(request, "orders/error.html", {
+                "error": "Invalid QR code"
+            })
+
+        if qr.is_used:
+            return render(request, "orders/error.html", {
+                "error": "QR already used"
+            })
+
+        if qr.is_expired():
+            qr.is_used = True
+            qr.save()
+            return render(request, "orders/error.html", {
+                "error": "QR expired (24 hours passed)"
+            })
+
+        order = qr.order
+        items = order.orderitem_set.filter(
+            product__outlet=qr.outlet_name
+        )
+
+        return render(request, "orders/claim_items.html", {
+            "order": order,
+            "items": items,
+            "outlet": qr.outlet_name,
+            "qr": qr,
+        })
+
+    return render(request, "orders/scan_qr.html")
+
+
 def role_select(request):
     return render(request, "registration/role_select.html")
 
@@ -131,39 +173,6 @@ def generate_qr_codes(order):
     return qrcodes
 
 
-
-def scan_qr(request):
-    if request.method == "POST":
-        token = request.POST.get("token")
-
-        try:
-            qr = QRCode.objects.get(token=token)
-        except QRCode.DoesNotExist:
-            return render(request, "orders/scan_qr.html", {
-                "error": "Invalid QR code"
-            })
-
-        if qr.is_used:
-            return render(request, "orders/scan_qr.html", {
-                "error": "QR already used"
-            })
-
-        qr.is_used = True
-        qr.save()
-
-        order = qr.order
-        items = order.orderitem_set.filter(
-            product__outlet=qr.outlet_name
-        )
-
-        return render(request, "orders/claim_items.html", {
-            "order": order,
-            "items": items,
-            "outlet": qr.outlet_name
-        })
-
-    return render(request, "orders/scan_qr.html")
-
 @login_required
 def student_home(request):
     return render(request, "products/home.html")
@@ -193,9 +202,36 @@ def toggle_product(request, product_id):
     return redirect("seller_dashboard")
 
 @login_required
+@login_required
 def order_history(request):
-    orders = Order.objects.filter(user=request.user)
-    return render(request, "orders/history.html", {"orders": orders})
+    orders = Order.objects.filter(user=request.user).order_by("-created_at")
+
+    history = []
+
+    for order in orders:
+        qrs = QRCode.objects.filter(order=order)
+
+        qr_list = []
+        for qr in qrs:
+            # auto-mark expired QRs (safety)
+            if not qr.is_used and qr.is_expired():
+                qr.is_used = True
+                qr.save()
+
+            qr_list.append({
+                "outlet": qr.outlet_name,
+                "status": "Used / Expired" if qr.is_used else "Active",
+            })
+
+        history.append({
+            "order": order,
+            "qrs": qr_list
+        })
+
+    return render(request, "orders/history.html", {
+        "orders": history
+    })
+
 
 
 from django.contrib.auth.decorators import login_required
@@ -207,27 +243,61 @@ from .utils import create_qr_image
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).order_by("-created_at")
 
-    qr_map = []
+    order_data = []
 
     for order in orders:
-        qrs = QRCode.objects.filter(order=order)
-        qr_data = []
+        qrs = QRCode.objects.filter(order=order)  
 
+        qr_list = []
         for qr in qrs:
             image_bytes = create_qr_image(qr.token)
             image_base64 = base64.b64encode(image_bytes).decode("utf-8")
 
-            qr_data.append({
+            items = order.orderitem_set.filter(
+                product__outlet=qr.outlet_name
+            )
+
+            item_list = [
+                {
+                    "name": item.product.name,
+                    "qty": item.quantity
+                }
+                for item in items
+            ]
+
+            qr_list.append({
                 "outlet": qr.outlet_name,
                 "is_used": qr.is_used,
                 "image": image_base64,
+                "expires_at": qr.expires_at.isoformat(),
+                "items": item_list
             })
 
-        qr_map.append({
+
+        order_data.append({
             "order": order,
-            "qrs": qr_data
+            "qrs": qr_list
         })
 
     return render(request, "orders/my_orders.html", {
-        "qr_map": qr_map
+        "orders": order_data
     })
+
+
+@user_passes_test(seller_required, login_url="/redirect/")
+def confirm_claim(request, qr_id):
+    qr = get_object_or_404(QRCode, id=qr_id)
+
+    if qr.is_used:
+        return render(request, "orders/error.html", {
+            "message": "QR already used"
+        })
+
+    qr.is_used = True
+    qr.save()
+
+    # qr.order.status = "CLAIMED"
+    # qr.order.save()
+    # QRCode.is_used = True
+
+    return render(request, "orders/claim_success.html", {"qr":qr})

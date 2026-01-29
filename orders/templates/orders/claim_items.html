@@ -9,3 +9,14 @@
 </ul>
 
 <p style="color:green;">QR marked as used</p>
+
+<form method="post" action="{% url 'confirm_claim' qr.id %}">
+    {% csrf_token %}
+    <button type="submit">
+        ✅ Confirm & Hand Over Order
+    </button>
+</form>
+
+<a href="{% url 'seller_dashboard' %}">
+    ❌ Cancel (Go Back)
+</a>

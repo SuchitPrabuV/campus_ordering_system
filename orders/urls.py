@@ -16,5 +16,7 @@ urlpatterns = [
     # QR flow
     path("scan/", views.scan_qr, name="scan_qr"),
     path("my-orders/", views.my_orders, name="my_orders"),
+    path("seller/confirm/<int:qr_id>/", views.confirm_claim, name="confirm_claim"),
+
 
 ]
